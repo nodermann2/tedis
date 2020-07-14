@@ -10,6 +10,15 @@ tarantool> SET('hello', 'world')
 ...
 ```
 
+SETEX (SET + EXPIRE)
+```
+tarantool> SET('hello', 'world', 500)
+
+---
+- ['hello', 'world', 1594732465]
+...
+```
+
 GET
 ```
 tarantool> GET('hello')
