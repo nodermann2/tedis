@@ -31,21 +31,21 @@ local function bootstrap()
     box.schema.user.grant('guest', 'read,write,execute', 'universe')
 end
 
-function GET(key)
+function get(key)
     local t = box.space['strings']:get(key)
     if t ~= nil then return t[FIELD.VALUE] else return nil end
 end
 
-function SET(key, value)
+function set(key, value)
     return box.space['strings']:replace({key, value, NOT_EXPIRE})
 end
 
-function SETEX(key, value, expire)
+function setex(key, value, expire)
     local now = math.floor(fiber.time())
     return box.space['strings']:replace({key, value, now + expire})
 end
 
-function EXPIRE(key, seconds)
+function expire(key, seconds)
     local t = box.space['strings']:get(key)
     if t ~= nil then
         local now = math.floor(fiber.time())
@@ -54,7 +54,7 @@ function EXPIRE(key, seconds)
     return NOT_FOUND
 end
 
-function TTL(key)
+function ttl(key)
     local t = box.space['strings']:get(key)
     if t ~= nil then
         if t[FIELD.EXPIRES] ~= NOT_EXPIRE then
@@ -66,7 +66,7 @@ function TTL(key)
     return -2 -- key does not exist
 end
 
-function DEL(key)
+function del(key)
     local t = box.space['strings']:delete(key)
     if t ~= nil then return t else return NOT_FOUND end
 end
@@ -84,13 +84,6 @@ local function expiration()
         fiber.sleep(1)
     end
 end
-
-set = SET
-setex = SETEX
-get = GET
-del = DEL
-expire = EXPIRE
-ttl = TTL
 
 box.once('tedis-1.0', bootstrap)
 fiber.create(expiration):name('strings_expiration')
