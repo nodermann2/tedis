@@ -33,7 +33,7 @@ local function bootstrap()
 end
 
 function GET(key)
-    local t = box.space['strings']:select(key)[FIRST_TUPLE]
+    local t = box.space['strings']:get(key)[FIRST_TUPLE]
     if t ~= nil then return t[FIELD.VALUE] else return nil end
 end
 
@@ -47,7 +47,7 @@ function SETEX(key, value, expire)
 end
 
 function EXPIRE(key, seconds)
-    local t = box.space['strings']:select(key)[FIRST_TUPLE]
+    local t = box.space['strings']:get(key)[FIRST_TUPLE]
     if t ~= nil then
         local now = math.floor(fiber.time())
         return box.space['strings']:update({key}, {{'=', FIELD.EXPIRES, now + seconds}} )
