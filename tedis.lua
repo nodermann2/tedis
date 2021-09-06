@@ -4,11 +4,6 @@ box.cfg {
 
 local fiber = require('fiber')
 
-FIELD = {
-    KEY = 1,
-    VALUE = 2,
-    EXPIRES = 3,
-}
 NOT_EXPIRE = 0
 NOT_FOUND = 0
 
@@ -24,7 +19,7 @@ local function bootstrap()
     })
     space:create_index('primary')
     space:create_index('expires', {
-        parts = { FIELD.EXPIRES, 'unsigned' },
+        parts = { 'expires', 'unsigned' },
         unique = false,
         if_not_exists = true,
     })
@@ -33,7 +28,7 @@ end
 
 function get(key)
     local t = box.space['strings']:get(key)
-    if t ~= nil then return t[FIELD.VALUE] else return nil end
+    if t ~= nil then return t['value'] else return nil end
 end
 
 function set(key, value)
@@ -49,7 +44,7 @@ function expire(key, seconds)
     local t = box.space['strings']:get(key)
     if t ~= nil then
         local now = math.floor(fiber.time())
-        return box.space['strings']:update({key}, {{'=', FIELD.EXPIRES, now + seconds}} )
+        return box.space['strings']:update({key}, {{'=', 'expires', now + seconds}} )
     end
     return NOT_FOUND
 end
@@ -57,9 +52,9 @@ end
 function ttl(key)
     local t = box.space['strings']:get(key)
     if t ~= nil then
-        if t[FIELD.EXPIRES] ~= NOT_EXPIRE then
+        if t['expires'] ~= NOT_EXPIRE then
             local now = math.floor(fiber.time())
-            return t[FIELD.EXPIRES]- now
+            return t['expires']- now
         end
         return -1 -- key exists but has no associated expire
     end
@@ -76,8 +71,8 @@ local function expiration()
         local now = math.floor(fiber.time())
         box.space['strings'].index.expires:pairs({NOT_EXPIRE}, {iterator='GT'}):each(
             function(t)
-                if t[FIELD.EXPIRES] <= now then
-                    box.space['strings']:delete(t[FIELD.KEY])
+                if t['expires'] <= now then
+                    box.space['strings']:delete(t['key'])
                 end
             end
         )
