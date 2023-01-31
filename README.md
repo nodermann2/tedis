@@ -1,5 +1,5 @@
 # Tedis
-Real-time key-value storage based on Tarantool
+In-memory persistent key-value storage with support ACID
 
 SET
 ```
