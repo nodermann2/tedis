@@ -1,5 +1,5 @@
 # Tedis
-Real-time key-value storage based on Tarantool like redis but on steroids
+Real-time key-value storage based on Tarantool.
 
 SET
 ```
