@@ -1,5 +1,5 @@
 # Tedis
-Real-time key-value storage based on Tarantool.
+Real-time key-value storage based on Tarantool
 
 SET
 ```
